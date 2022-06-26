@@ -24,14 +24,29 @@ impl<'a> Lexer<'a> {
         self.ch = if self.read_position >= self.input.len() {
             0
         } else {
-            self.input.as_bytes()[self.read_position];
+            self.input.as_bytes()[self.read_position]
         };
         self.position = self.read_position;
         self.read_position += 1;
     }
 
-    pub fn next_token(&self) -> Token {
-        Token::ILLEGAL
+    pub fn next_token(&mut self) -> Token {
+        let tok = match self.ch {
+            b'=' => Token::ASSIGN,
+            b';' => Token::SEMICOLON,
+            b'(' => Token::LPAREN,
+            b')' => Token::RPAREN,
+            b',' => Token::COMMA,
+            b'+' => Token::PLUS,
+            b'{' => Token::LBRACE,
+            b'}' => Token::RBRACE,
+            0 => Token::EOF,
+            _ => Token::ILLEGAL
+        };
+
+        self.read_char();
+
+        tok
     }
 }
 
