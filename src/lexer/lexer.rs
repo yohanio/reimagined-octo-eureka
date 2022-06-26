@@ -1,10 +1,22 @@
 use crate::token::token::Token;
 
-pub struct Lexer {}
+pub struct Lexer<'a> {
+    input: &'a str,
+    position: usize,
+    read_position: usize,
+    ch: u8,
+}
 
-impl Lexer {
-    pub fn new() -> Self {
-        Self {}
+impl<'a> Lexer<'a> {
+    pub fn new(input: &'a str) -> Self {
+        let lexer = Lexer {
+            input,
+            position: 0,
+            read_position: 0,
+            ch: 0
+        };
+
+        lexer
     }
 
     pub fn next_token(&self) -> Token {
@@ -34,7 +46,7 @@ mod tests {
         ];
 
         // when
-        let mut lexer = Lexer::new();
+        let mut lexer = Lexer::new(input);
 
         // then
         for expect in tests {
