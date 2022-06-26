@@ -9,14 +9,25 @@ pub struct Lexer<'a> {
 
 impl<'a> Lexer<'a> {
     pub fn new(input: &'a str) -> Self {
-        let lexer = Lexer {
+        let mut lexer = Lexer {
             input,
             position: 0,
             read_position: 0,
             ch: 0
         };
 
+        lexer.read_char();
         lexer
+    }
+
+    fn read_char(&mut self) {
+        self.ch = if self.read_position >= self.input.len() {
+            0
+        } else {
+            self.input.as_bytes()[self.read_position];
+        };
+        self.position = self.read_position;
+        self.read_position += 1;
     }
 
     pub fn next_token(&self) -> Token {
