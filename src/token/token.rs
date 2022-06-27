@@ -4,8 +4,8 @@ pub enum Token {
     EOF,
 
     // 식별자 + 리터럴
-    IDENT,
-    INT,
+    IDENT(String),
+    INT(i64),
 
     // 연산자
     ASSIGN,

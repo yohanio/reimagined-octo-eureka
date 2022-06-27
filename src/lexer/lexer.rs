@@ -31,6 +31,8 @@ impl<'a> Lexer<'a> {
     }
 
     pub fn next_token(&mut self) -> Token {
+        self.skip_whitespace();
+
         let tok = match self.ch {
             b'=' => Token::ASSIGN,
             b';' => Token::SEMICOLON,
@@ -40,6 +42,12 @@ impl<'a> Lexer<'a> {
             b'+' => Token::PLUS,
             b'{' => Token::LBRACE,
             b'}' => Token::RBRACE,
+            b'a'..=b'z' | b'A'..=b'Z' | b'_' => {
+                return self.read_identifier();
+            }
+            b'0'..=b'9' => {
+                return self.read_number();
+            }
             0 => Token::EOF,
             _ => Token::ILLEGAL
         };
@@ -47,6 +55,53 @@ impl<'a> Lexer<'a> {
         self.read_char();
 
         tok
+    }
+
+    fn read_identifier(&mut self) -> Token {
+        let position = self.position;
+
+        loop {
+            match self.ch {
+                b'a'..=b'z' | b'A'..=b'Z' | b'_' => {
+                    self.read_char();
+                }
+                _ => break
+            }
+        }
+
+        let literal = &self.input[position..self.position];
+        match literal {
+            "fn" => Token::FUNCTION,
+            "let" => Token::LET,
+            _ => Token::IDENT(String::from(literal))
+        }
+    }
+
+    fn read_number(&mut self) -> Token {
+        let position = self.position;
+
+        loop {
+            match self.ch {
+                b'0'..=b'9' => {
+                    self.read_char();
+                }
+                _ => break
+            }
+        }
+
+        let literal = &self.input[position..self.position];
+        Token::INT(literal.parse::<i64>().unwrap())
+    }
+
+    fn skip_whitespace(&mut self) {
+        loop {
+            match self.ch {
+                b' ' | b'\t' | b'\n' | b'\r' => {
+                    self.read_char();
+                }
+                _ => break
+            }
+        }
     }
 }
 
@@ -58,17 +113,44 @@ mod tests {
     #[test]
     fn test_next_token() {
         // given
-        let input = r#"=+(){},;"#;
+        let input = r#"let five = 5;
+let ten = 10;
+
+let add = fn(x, y) {
+    x + y;
+};
+"#;
         let tests = vec![
+            Token::LET,
+            Token::IDENT(String::from("five")),
             Token::ASSIGN,
-            Token::PLUS,
+            Token::INT(5),
+            Token::SEMICOLON,
+
+            Token::LET,
+            Token::IDENT(String::from("ten")),
+            Token::ASSIGN,
+            Token::INT(10),
+            Token::SEMICOLON,
+
+            Token::LET,
+            Token::IDENT(String::from("add")),
+            Token::ASSIGN,
+            Token::FUNCTION,
             Token::LPAREN,
+            Token::IDENT(String::from("x")),
+            Token::COMMA,
+            Token::IDENT(String::from("y")),
             Token::RPAREN,
             Token::LBRACE,
-            Token::RBRACE,
-            Token::COMMA,
+            Token::IDENT(String::from("x")),
+            Token::PLUS,
+            Token::IDENT(String::from("y")),
             Token::SEMICOLON,
-            Token::EOF
+            Token::RBRACE,
+            Token::SEMICOLON,
+
+            Token::EOF,
         ];
 
         // when
