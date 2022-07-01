@@ -31,7 +31,7 @@ impl<'a> Lexer<'a> {
     }
 
     pub fn next_token(&mut self) -> Token {
-        self.skip_whitespace();
+        self.eat_whitespace();
 
         let tok = match self.ch {
             b'=' => Token::ASSIGN,
@@ -43,7 +43,7 @@ impl<'a> Lexer<'a> {
             b'{' => Token::LBRACE,
             b'}' => Token::RBRACE,
             b'a'..=b'z' | b'A'..=b'Z' | b'_' => {
-                return self.read_identifier();
+                return self.lookup_ident();
             }
             b'0'..=b'9' => {
                 return self.read_number();
@@ -57,7 +57,7 @@ impl<'a> Lexer<'a> {
         tok
     }
 
-    fn read_identifier(&mut self) -> Token {
+    fn lookup_ident(&mut self) -> Token {
         let position = self.position;
 
         loop {
@@ -93,7 +93,7 @@ impl<'a> Lexer<'a> {
         Token::INT(literal.parse::<i64>().unwrap())
     }
 
-    fn skip_whitespace(&mut self) {
+    fn eat_whitespace(&mut self) {
         loop {
             match self.ch {
                 b' ' | b'\t' | b'\n' | b'\r' => {
@@ -119,6 +119,8 @@ let ten = 10;
 let add = fn(x, y) {
     x + y;
 };
+
+let result = add(five, ten);
 "#;
         let tests = vec![
             Token::LET,
@@ -148,6 +150,17 @@ let add = fn(x, y) {
             Token::IDENT(String::from("y")),
             Token::SEMICOLON,
             Token::RBRACE,
+            Token::SEMICOLON,
+
+            Token::LET,
+            Token::IDENT(String::from("result")),
+            Token::ASSIGN,
+            Token::IDENT(String::from("add")),
+            Token::LPAREN,
+            Token::IDENT(String::from("five")),
+            Token::COMMA,
+            Token::IDENT(String::from("ten")),
+            Token::RPAREN,
             Token::SEMICOLON,
 
             Token::EOF,
