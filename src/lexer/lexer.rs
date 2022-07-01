@@ -175,4 +175,23 @@ let result = add(five, ten);
             assert_eq!(expect, tok);
         }
     }
+
+    #[test]
+    fn test_extend_token() {
+        let input = r#"!-/*5;
+5 < 10 > 5;
+"#;
+        let tests = vec![
+            Token::EOF,
+        ];
+
+        // when
+        let mut lexer = Lexer::new(input);
+
+        // then
+        for expect in tests {
+            let tok = lexer.next_token();
+            assert_eq!(expect, tok);
+        }
+    }
 }
