@@ -28,4 +28,9 @@ pub enum Token {
     // 예약어
     FUNCTION,
     LET,
+    TRUE,
+    FALSE,
+    IF,
+    ELSE,
+    RETURN,
 }
