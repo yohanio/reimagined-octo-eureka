@@ -214,4 +214,48 @@ let result = add(five, ten);
             assert_eq!(expect, tok);
         }
     }
+
+    #[test]
+    fn test_new_keywords() {
+        let input = r#"if (5 < 10) {
+    return true;
+} else {
+    return false;
+}"#;
+
+        let tests = vec![
+            Token::IF,
+            Token::LPAREN,
+            Token::INT(5),
+            Token::LT,
+            Token::INT(10),
+            Token::RPAREN,
+            Token::LBRACE,
+
+            Token::RETURN,
+            Token::TRUE,
+            Token::SEMICOLON,
+
+            Token::RBRACE,
+            Token::ELSE,
+            Token::LBRACE,
+
+            Token::RETURN,
+            Token::FALSE,
+            Token::SEMICOLON,
+
+            Token::RBRACE,
+
+            Token::EOF,
+        ];
+
+        // when
+        let mut lexer = Lexer::new(input);
+
+        // then
+        for expect in tests {
+            let tok = lexer.next_token();
+            assert_eq!(expect, tok);
+        }
+    }
 }
