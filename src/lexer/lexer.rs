@@ -42,6 +42,12 @@ impl<'a> Lexer<'a> {
             b'+' => Token::PLUS,
             b'{' => Token::LBRACE,
             b'}' => Token::RBRACE,
+            b'-' => Token::MINUS,
+            b'!' => Token::BANG,
+            b'/' => Token::SLASH,
+            b'*' => Token::ASTERISK,
+            b'<' => Token::LT,
+            b'>' => Token::GT,
             b'a'..=b'z' | b'A'..=b'Z' | b'_' => {
                 return self.lookup_ident();
             }
@@ -182,6 +188,20 @@ let result = add(five, ten);
 5 < 10 > 5;
 "#;
         let tests = vec![
+            Token::BANG,
+            Token::MINUS,
+            Token::SLASH,
+            Token::ASTERISK,
+            Token::INT(5),
+            Token::SEMICOLON,
+
+            Token::INT(5),
+            Token::LT,
+            Token::INT(10),
+            Token::GT,
+            Token::INT(5),
+            Token::SEMICOLON,
+
             Token::EOF,
         ];
 

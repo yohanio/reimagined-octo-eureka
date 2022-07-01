@@ -10,6 +10,12 @@ pub enum Token {
     // 연산자
     ASSIGN,
     PLUS,
+    MINUS,
+    BANG,
+    ASTERISK,
+    SLASH,
+    LT,
+    GT,
 
     // 구분자
     COMMA,
